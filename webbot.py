@@ -40,8 +40,10 @@ def downloadProcess (html, base, filetype, linkList):
                 urllib.urlretrieve( linkGet, filesave )
             except urllib.URLError as e:
                 print "urllib URL Error: ", e.code
-        elif "htm" in linkText: # covers both ".htm" and ".html" files
-            linkList.append( link )
+        # "htm" covers both ".htm" and ".html" files
+        # "http" covers both "http" and "https" URL
+        elif "htm" in linkText and "http" not in linkText: 
+            linkList.append( linkText )
 
 #start = "http://" + raw_input( "Where would you like to start searching?\n" )
 start = "http://www.irrelevantcheetah.com/browserimages.html"
@@ -51,26 +53,24 @@ filetype = raw_input( "What file type are you looking for?\n" )
 numSlash = start.count( '/' )
 slashList = [i for i, ind in enumerate(start) if ind == '/']
 
-# extract base address
+# extract base address and link
 if len(slashList) >= 3:
     third = slashList[2]
     base = start[:third]
+    linkText = start[third:]
 else:
     base = start
+    linkText = ""
 
-linkList = []
+linkList = list()
+linkList.append( linkText )
 
-html = getHtml( start )
-if html != None:
-    print "Parsing " + start
-    downloadProcess( html, base, filetype, linkList )
-
-for leftover in linkList:
-    time.sleep( 0.1 )
-    linkText = str( leftover.get('href') )
+for linkText in linkList:
     html = getHtml( base + linkText )
     if html != None:
         print "Parsing " + base + linkText
         downloadProcess( html, base, filetype, linkList )
+    # wait 0.1s to avoid overloading server
+    time.sleep( 0.1 )
 
 print "link list: ", linkList
