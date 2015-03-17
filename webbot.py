@@ -4,6 +4,7 @@ import time
 import urllib
 import string
 import os
+import re
 
 def getHtml (url):
     browser = mechanize.Browser()
@@ -42,7 +43,8 @@ def downloadProcess (html, base, filetype, linkList):
                 print "urllib URL Error: ", e.code
         # "htm" covers both ".htm" and ".html" files
         # "http" covers both "http" and "https" URL
-        elif "htm" in linkText and "http" not in linkText: 
+        #elif "htm" in linkText and "http" not in linkText: 
+        elif "htm" in linkText and not re.match('^http', linkText):
             linkList.append( linkText )
 
 #start = "http://" + raw_input( "Where would you like to start searching?\n" )
